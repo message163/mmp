@@ -28,10 +28,5 @@
         "home": "https://skimdb.npmjs.com/",
         "registry": "https://skimdb.npmjs.com/registry/",
         "ping": "https://skimdb.npmjs.com/registry"
-    },
-    "test": {
-        "home": "123",
-        "registry": "123",
-        "ping": "123"
     }
 }

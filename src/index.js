@@ -11,6 +11,8 @@ const chalk = require("chalk");
 const path = require('path')
 program.version(PKG.version)
 
+const whiteList = ['npm', 'yarn', 'tencent', 'cnpm', 'taobao', 'npmMirror'] //白名单
+
 const getOrigin = async () => {
     return await execSync('npm get registry', { encoding: "utf-8" })
 }
@@ -85,7 +87,7 @@ program.command('ping').description('测试镜像地址速度').action(() => {
         const url = registries[result.sel].ping.trim()
 
         ping(url).then(time => console.log(chalk.blue(`响应时长: ${time}ms`)))
-            .catch(() => console.log(chalk.red('GG')))
+            .catch(() => console.log(chalk.red('GG','timeout')))
 
     })
 })
@@ -116,7 +118,7 @@ program.command('add').description('自定义镜像').action(() => {
                     return `url不能为空`
                 }
                 return true
-            }       
+            }
         }
     ]).then(result => {
 
@@ -130,9 +132,52 @@ program.command('add').description('自定义镜像').action(() => {
             registry: result.url.trim(),
             ping: del(result.url.trim()),
         }
-        fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 4))
-        console.log(chalk.blue('添加完成'))
+        try {
+            fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 4))
+            console.log(chalk.blue('添加完成'))
+        }
+        catch (e) {
+            console.log(chalk.red(err))
+        }
+
     })
+})
+
+program.command('delete').description('删除自定义的源').action(() => {
+
+    const keys = Object.keys(registries)
+    if (keys.length === whiteList.length) {
+        return console.log(chalk.red('当前无自定义源可以删除'))
+    } else {
+
+        const Difference = keys.filter((key) => !whiteList.includes(key))
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "sel",
+                message: "请选择删除的镜像",
+                choices: Difference
+            }
+        ]).then(async result => {
+            const current = await getOrigin()
+            const selOrigin = registries[result.sel]
+            if (current.trim() == selOrigin.registry.trim()) {
+                console.log(chalk.red(`当前还在使用该镜像${registries[result.sel].registry},请切换其他镜像删除`))
+            } else {
+                try {
+                    delete registries[result.sel]
+
+                    fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 4))
+
+                    console.log(chalk.green('SUCCESS 操作完成'))
+                }
+                catch (e) {
+                    console.log(chalk.red(err))
+                }
+            }
+
+        })
+    }
 })
 
 
