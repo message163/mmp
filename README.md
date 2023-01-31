@@ -1,5 +1,9 @@
+
 # 这是一个切换镜像源的库
 
+安装建议加上-g
+
+npm i xmzs -g
 ##### mmp ls 查看目前源
 
 * npm-------  https://registry.npmjs.org/
@@ -31,3 +35,7 @@
 
 ? 请选择镜像 cnpm
 响应时长: 1635ms
+
+##### mmp delete 删除自定义源
+
+add添加的源都可以删除
