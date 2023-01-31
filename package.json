@@ -1,0 +1,26 @@
+{
+    "name": "xmzs",
+    "version": "1.1.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "nrm",
+        "npm",
+        "cnpm",
+        "yarn"
+    ],
+    "bin": {
+        "mmp": "./src/index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "chalk": "^4.0.0",
+        "commander": "^10.0.0",
+        "inquirer": "^8.0.0",
+        "node-http-ping": "^0.3.1"
+    }
+}
