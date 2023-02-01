@@ -22,7 +22,7 @@ program.command('ls').description('查看镜像').action(async () => {
 
     const res = await getOrigin()
 
-    const keys = Object.keys(registries)    
+    const keys = Object.keys(registries)
 
     const message = []
 
@@ -87,7 +87,7 @@ program.command('ping').description('测试镜像地址速度').action(() => {
         const url = registries[result.sel].ping.trim()
 
         ping(url).then(time => console.log(chalk.blue(`响应时长: ${time}ms`)))
-            .catch(() => console.log(chalk.red('GG','timeout')))
+            .catch(() => console.log(chalk.red('GG', 'timeout')))
 
     })
 })
@@ -176,6 +176,50 @@ program.command('delete').description('删除自定义的源').action(() => {
                 }
             }
 
+        })
+    }
+})
+
+program.command('rename').description('重命名').action(() => {
+    const keys = Object.keys(registries)
+    if (keys.length === whiteList.length) {
+        return console.log(chalk.red('当前无自定义源可以重命名'))
+    } else {
+        const Difference = keys.filter((key) => !whiteList.includes(key))
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "sel",
+                message: "请选择名称",
+                choices: Difference
+            },
+            {
+                type: "input",
+                name: "rename",
+                message: "请输入新名称",
+                validate(answer) {
+                    const keys = Object.keys(registries)
+                    if (keys.includes(answer)) {
+                        return `不能起名${answer}跟保留字冲突`
+                    }
+                    if (!answer) {
+                        return `名称不能为空`
+                    }
+                    return true;
+                }
+            }
+        ]).then(async result => {
+
+            registries[result.rename] = Object.assign({}, registries[result.sel])
+            delete registries[result.sel]
+
+            try {
+                fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 4))
+                console.log(chalk.greenBright(`SUCCESS 重命名完成 ${result.rename}`))
+            }
+            catch (e) {
+                console.log(chalk.red(err))
+            }
         })
     }
 })
