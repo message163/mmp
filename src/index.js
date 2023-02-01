@@ -22,7 +22,7 @@ program.command('ls').description('查看镜像').action(async () => {
 
     const res = await getOrigin()
 
-    const keys = Object.keys(registries)
+    const keys = Object.keys(registries)    
 
     const message = []
 
@@ -179,7 +179,6 @@ program.command('delete').description('删除自定义的源').action(() => {
         })
     }
 })
-
 
 
 program.parse(process.argv)     
