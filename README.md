@@ -71,7 +71,7 @@ add添加的源都可以删除
 
 自定义添加的源都可以进行重新命名
 
-
+##### mmp edit 编辑自定义镜像地址
 
 # 用法 Usage
 
@@ -99,5 +99,12 @@ Commands:
 
   rename          重命名
 
+  edit            编辑自定义镜像地址
+
   help [command]  display help for command
 
+
+### 贡献者
+
+[xiaoman](https://github.com/message163)  
+[Jomorx](https://github.com/Jomorx)
