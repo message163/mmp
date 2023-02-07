@@ -103,7 +103,7 @@ program.command('add').description('自定义镜像').action(() => {
                 if (keys.includes(answer)) {
                     return `不能起名${answer}跟保留字冲突`
                 }
-                if (!answer) {
+                if (!answer.trim()) {
                     return '名称不能为空'
                 }
                 return true
@@ -114,7 +114,7 @@ program.command('add').description('自定义镜像').action(() => {
             name: "url",
             message: "请输入镜像地址",
             validate(answer) {
-                if (!answer) {
+                if (!answer.trim()) {
                     return `url不能为空`
                 }
                 return true
@@ -202,7 +202,7 @@ program.command('rename').description('重命名').action(() => {
                     if (keys.includes(answer)) {
                         return `不能起名${answer}跟保留字冲突`
                     }
-                    if (!answer) {
+                    if (!answer.trim()) {
                         return `名称不能为空`
                     }
                     return true;
@@ -224,5 +224,46 @@ program.command('rename').description('重命名').action(() => {
     }
 })
 
+program.command('edit').description('编辑自定义的源').action(async ()=>{
+    const keys = Object.keys(registries)
+    if (keys.length === whiteList.length) {
+        return console.log(chalk.red('当前无自定义源可以编辑'))
+    }
+    const Difference = keys.filter((key) => !whiteList.includes(key)) 
+    const {sel} =await inquirer.prompt([{
+        type:"list",
+        name:"sel",
+        message:"请选择需要编辑的源",
+        choices:Difference
+    }])
+    const {registerUrl} =  await inquirer.prompt([{
+        type:"input",
+        name:"registerUrl",
+        message:"输入修改后的镜像地址",
+        default:()=>registries[sel].registry,
+        validate(registerUrl) {
+            if(!registerUrl.trim())
+                return "镜像地址不能为空"
+            return true
+        }
+    }])
+    const del = (url) => {
+        const arr = url.split('')
+        return arr[arr.length - 1] == '/' ? (arr.pop() && arr.join('')) : arr.join('')
+    }
+
+    registries[sel] = {
+        home: registerUrl.trim(),
+        registry: registerUrl.trim(),
+        ping: del(registerUrl.trim()),
+    }
+    try {
+        fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 4))
+        console.log(chalk.blue('修改完成'))
+    }
+    catch (e) {
+        console.log(chalk.red(err))
+    }
+})
 
 program.parse(process.argv)     
