@@ -71,7 +71,12 @@ program.command('current').description('查看当前源').action(async () => {
             return k;
         }
     })
-    console.log(chalk.blue('当前源:', v))
+    if (v) {
+        console.log(chalk.blue('当前源:', v))
+    } else {
+        console.log(chalk.green('当前源:', reg))
+    }
+
 })
 
 program.command('ping').description('测试镜像地址速度').action(() => {
@@ -224,25 +229,25 @@ program.command('rename').description('重命名').action(() => {
     }
 })
 
-program.command('edit').description('编辑自定义的源').action(async ()=>{
+program.command('edit').description('编辑自定义的源').action(async () => {
     const keys = Object.keys(registries)
     if (keys.length === whiteList.length) {
         return console.log(chalk.red('当前无自定义源可以编辑'))
     }
-    const Difference = keys.filter((key) => !whiteList.includes(key)) 
-    const {sel} =await inquirer.prompt([{
-        type:"list",
-        name:"sel",
-        message:"请选择需要编辑的源",
-        choices:Difference
+    const Difference = keys.filter((key) => !whiteList.includes(key))
+    const { sel } = await inquirer.prompt([{
+        type: "list",
+        name: "sel",
+        message: "请选择需要编辑的源",
+        choices: Difference
     }])
-    const {registerUrl} =  await inquirer.prompt([{
-        type:"input",
-        name:"registerUrl",
-        message:"输入修改后的镜像地址",
-        default:()=>registries[sel].registry,
+    const { registerUrl } = await inquirer.prompt([{
+        type: "input",
+        name: "registerUrl",
+        message: "输入修改后的镜像地址",
+        default: () => registries[sel].registry,
         validate(registerUrl) {
-            if(!registerUrl.trim())
+            if (!registerUrl.trim())
                 return "镜像地址不能为空"
             return true
         }
